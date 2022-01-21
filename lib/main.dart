@@ -1,6 +1,7 @@
 import 'package:bhagawad_gita/post_result_model.dart';
 import 'package:flutter/material.dart';
 import 'sloka.dart';
+import 'detail.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,11 +31,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  List<Sloka> slokas = [
-    Sloka(isi_sloka: "isi sloka", isi_terjemahan: "ini sloka 1", klasifikasi: "ini terjemahan 1"),
-    Sloka(isi_sloka: "isi sloka", isi_terjemahan: "ini sloka 2", klasifikasi: "ini terjemahan 2"),
-    Sloka(isi_sloka: "isi sloka", isi_terjemahan: "ini sloka 3", klasifikasi: "ini terjemahan 3"),
-  ];
+  TextEditingController nameController = TextEditingController();
+  List<Sloka> listSloka = [];
 
   Widget slokaTemplate(sloka){
     return Card(
@@ -45,25 +43,28 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              sloka.isi_sloka,
+              "BAB ${sloka.bab} : Sloka ${sloka.sloka}",
               style: TextStyle(
                 fontSize: 18.0,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: 6.0),
-            Text(
-              sloka.isi_terjemahan,
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.grey[600],
+                color: Colors.black,
+                fontWeight: FontWeight.bold
               ),
             ),
             SizedBox(height: 6.0),
             Text(
               sloka.klasifikasi,
               style: TextStyle(
-                fontSize: 18.0,
+                fontSize: 17.0,
+                color: Colors.black,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            SizedBox(height: 6.0),
+            Text(
+              sloka.isiTerjemahan,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14.0,
                 color: Colors.grey[600],
               ),
             ),
@@ -73,9 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  PostResult? postResult = null;
-  TextEditingController nameController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Column(
+      body: Container(
+        child: Column(
             children: [
               TextField(
                 decoration: InputDecoration(border: OutlineInputBorder(), hintText: "Insert name"),
@@ -95,19 +92,29 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: () {
                   PostResult.connectToAPI(nameController.text).then((value) {
-                    postResult = value;
+                    listSloka = value;
                     setState(() {});
                   });
                 },
                 child: Text("POST"),
               ),
-              Text((postResult != null) ? postResult!.sloka.toString() + " | " : "Tidak ada data"),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: listSloka.length,
+                    itemBuilder: (context, index){
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => DetailScreen(sloka: listSloka[index])),
+                        );
+                      },
+                      child: Container(child: slokaTemplate(listSloka[index]))
+                    );
+                }),
+              ),
             ],
-          ),
-          Column(
-            children: ListView.separated(itemBuilder: itemBuilder, separatorBuilder: separatorBuilder, itemCount: itemCount),
-          )
-        ]
+        ),
       ),
     );
   }

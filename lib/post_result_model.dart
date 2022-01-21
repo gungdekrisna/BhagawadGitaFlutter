@@ -8,13 +8,7 @@ class PostResult {
 
   PostResult({ required this.sloka});
 
-  factory PostResult.createPostResult(List<Sloka> object) {
-    return PostResult(
-      sloka: object
-    );
-  }
-
-  static Future<PostResult> connectToAPI(String word) async
+  static Future connectToAPI(String word) async
   {
     String apiURL = "http://192.168.43.165:5000/search";
 
@@ -22,8 +16,9 @@ class PostResult {
       "nm": word
     });
 
-    var jsonObject = json.decode(apiResult.body);
+    Iterable it = jsonDecode(apiResult.body);
+    List<Sloka> slokas = it.map((e) => Sloka.fromJson(e)).toList();
 
-    return PostResult.createPostResult(jsonObject);
+    return slokas;
   }
 }

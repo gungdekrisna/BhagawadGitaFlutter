@@ -4,13 +4,15 @@ class Sloka {
   String klasifikasi;
   int bab;
   int sloka;
+  String audioTerjemahan;
 
   Sloka({
     required this.isiSloka,
     required this.isiTerjemahan,
     required this.klasifikasi,
     required this.bab,
-    required this.sloka
+    required this.sloka,
+    required this.audioTerjemahan
   });
 
   factory Sloka.fromJson(Map<String, dynamic> json) {
@@ -19,7 +21,8 @@ class Sloka {
       isiTerjemahan: json['isi_terjemahan'],
       klasifikasi: json['klasifikasi'],
       bab: json['bab'],
-      sloka: json['sloka']
+      sloka: json['sloka'],
+      audioTerjemahan: json['mp3_terjemahan']
     );
   }
 }
